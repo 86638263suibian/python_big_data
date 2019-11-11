@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 from urllib import request
 import xml.etree.ElementTree as ET
 from io import BytesIO
@@ -20,30 +21,37 @@ def main():
 def create_chart(unemployment_data, gdp_data):
     fig, ax1 = plt.subplots()
 
-    unemployment_keys = [list(k.keys())[0] for k in unemployment_data]
-    unemployment_values = [list(v.values())[0] for v in unemployment_data]
-    gdp_keys = [list(k.keys())[0] for k in gdp_data]
+    years = np.array([list(k.keys())[0]
+                      for k in unemployment_data])
+
+    unemployment_values = np.array(
+        [list(v.values())[0] for v in unemployment_data])
+
     gdp_values = [list(v.values())[0] for v in gdp_data]
+
+    print(type(gdp_values[0]))
+    print(gdp_values)
 
     color = "tab:blue"
     ax1.set_xlabel("Year")
     ax1.set_ylabel("Unemployment (% of labor force)", color=color)
-    ax1.plot(unemployment_keys, unemployment_values,
+    ax1.plot(years, unemployment_values,
              label="Unemployment", color=color)
     ax1.tick_params(axis='y', labelcolor=color)
     ax2 = ax1.twinx()
 
     color = "tab:orange"
     ax2.set_ylabel('GDP (local currency)', color=color)
-    ax2.plot(gdp_keys, gdp_values, label="GDP", color=color)
+    ax2.plot(years, gdp_values, label="GDP", color=color)
     ax2.tick_params(axis='y', labelcolor=color)
+    ax = plt.gca()
+    ax.get_xaxis().get_major_formatter().set_useOffset(False)
 
     ax1.legend(loc=2)
     ax2.legend(loc=1)
 
     fig.tight_layout()
-    plt.show()
-    # save_plot(fig)
+    save_plot(fig)
 
 
 def get_data(url):
